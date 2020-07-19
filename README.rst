@@ -48,35 +48,55 @@ Adding to your app
 
     from django_app_settings import Settings
 
-2. Set the settings names that are required in your app and defaults for them:
+2. Set the settings names that are required in your app:
 
 .. code-block:: python
 
     settings = (
         'SETTING1',
-        'SETTING2'
+        'SETTING2',
+        ...
     )
-    defaults = {
-        'SETTING1': 'value'
-    }
 
 .. warning::
     All the settings names should be uppercase!
 
+3. (optional) Set ``defaults`` for your settings so that the setting can fall back to defaults if it is not found in project:
+
+.. code-block:: python
+
+    defaults = {
+        'SETTING1': 'value',
+        ...
+    }
+
+4. (optional) Set the ``app_prefix`` in order to be able to find your settings in the project using this prefix:
+
+.. code-block:: python
+
+    app_prefix = 'MYAPP'
+
 .. note::
-    ``defaults`` is unnecessary
 
-3. Set the ``settings_prefix`` in order to be able to find your settings at the project level:
+    This is an optional step, so you don't have to set app_prefix,
+    but I strongly recommend you do this so that there are no conflicts with other project settings
 
-.. code-block:: python
-
-    settings_prefix = 'MYAPP'
-
-4. create ``Settings`` object:
+5. (optional) If you have constant settings that don't need to be changed, you can use internal_settings.
+   User at the project level will not have access to these settings:
 
 .. code-block:: python
 
-    app_settings = Settings(settings, settings_prefix, defaults)
+    internal_settings = {
+        'INTERNAL1': 'VALUE1',
+        ...
+    }
+
+
+6. Create ``Settings`` object:
+
+.. code-block:: python
+
+    app_settings = Settings(settings, app_prefix=app_prefix, defaults=defaults, internal_settings=internal_settings)
 
 Summing up, your settings.py should be:
 
@@ -84,7 +104,7 @@ Summing up, your settings.py should be:
 
     from django_app_settings import Settings
 
-    settings_prefix = 'MY_APP'
+    app_prefix = 'MY_APP'
     settings = (
         'SETTING1',
         'SETTING2'
@@ -92,8 +112,25 @@ Summing up, your settings.py should be:
     defaults = {
         'SETTING1': 'value'
     }
+    internal_settings = {
+        'INTERNAL1': 'VALUE1',
+    }
 
-    app_settings = Settings(settings, defaults, settings_prefix)
+    app_settings = Settings(settings, app_prefix=app_prefix, defaults=defaults, internal_settings=internal_settings)
+
+You can skip the optional steps and set the ``settings`` only so that your ``app_settings`` are like this:
+
+.. code-block:: python
+
+    from django_app_settings import Settings
+
+    settings = (
+        'SETTING1',
+        'SETTING2'
+    )
+
+    app_settings = Settings(settings)
+
 
 Usage in app
 ''''''''''''
@@ -112,11 +149,11 @@ Therefore, please, warn users of your app to set the required settings as shown 
 Project level usage
 -------------------
 
-People who will use your app with this package should set settings in their project level **settings.py** with your ``settings_prefix``.
-So if your ``settings_prefix`` is ``SOME_APP`` as above then project level settings should be:
+People who will use your app with this package should set settings in their project level **settings.py** with your ``app_prefix`` or just leave them.
+So if your ``app_prefix`` is ``SOME_APP`` as above then project level settings should be:
 
 .. code-block:: python
 
     MY_APP_SETTING1 = 'some value'
-    MY_APP_SETTING1 = 'another value'
+    MY_APP_SETTING2 = 'another value'
 
