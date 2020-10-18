@@ -22,7 +22,7 @@ class Settings:
             val = self.internal_settings[attr]
         else:
             # Fall back to defaults if not found
-            val = self.deafults.get(attr)
+            val = self.defaults.get(attr)
 
         self.validate_setting(attr, val)
 
